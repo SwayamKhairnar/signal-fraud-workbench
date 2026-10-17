@@ -2,7 +2,7 @@
 
 ## Current stage
 
-Stage D: Phases 1-12 implemented and checked locally. Phase 13 is packaged for one Render Docker service; the public account deployment and live URL are not yet verified.
+Stage D: Phases 1-12 implemented and checked locally. Phase 13 is packaged for one Render Docker service and pushed to [GitHub](https://github.com/SwayamKhairnar/signal-fraud-workbench); the Render deployment and live URL are not yet verified.
 
 The project owner approved the final brief and BankSim, delegated technical choices, and asked the AI to evaluate each phase and continue without routine questions. The original brief's pause checkpoints are superseded by that request.
 
@@ -22,7 +22,7 @@ The project owner approved the final brief and BankSim, delegated technical choi
 | 10 | What-if rescoring and PDF export | What-if API test; sample PDF generated, rendered, and inspected |
 | 11 | Responsive and keyboard/reduced-motion CSS | Production build passes; visual browser recheck blocked by browser policy |
 | 12 | Reliability and demo script | 13 backend tests pass; frontend build passes; 20k-row sample scored locally |
-| 13 | Single-service package | Dockerfile, render.yaml, static serving, and local static smoke test; Docker image build in progress |
+| 13 | Single-service package | Dockerfile, render.yaml, static serving, local static smoke test, and public source repository; Docker image build in progress |
 
 ## Model and data decisions
 
@@ -36,7 +36,7 @@ The project owner approved the final brief and BankSim, delegated technical choi
 ## Remaining checks
 
 1. Finish the Docker build and run its sample path locally, including static assets and model loading.
-2. Obtain a connected Render deployment destination and verify its public URL, 20,000-row memory, and cold start. No Render account or Git remote is configured in this checkout yet.
+2. Finish Render sign-in, deploy the GitHub repository, and verify its public URL, 20,000-row memory, and cold start. Render sign-in is currently waiting for the project owner in the visible browser.
 3. Recheck the complete UI at mobile and projector widths when browser control permits it. The browser policy rejected the local page after the initial overview inspection; builds and API tests continue to pass.
 
 ## Known limitations

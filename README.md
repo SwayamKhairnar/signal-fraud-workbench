@@ -2,6 +2,8 @@
 
 Signal is a college AIML demonstration of **batch fraud decision support** on the synthetic [BankSim dataset](https://www.kaggle.com/datasets/ealaxi/banksim1). It scores a documented CSV with a saved offline model, ranks alerts, explains each selected score, compares models, and replays transactions in simulation order. The app does not train on uploaded files or make real banking decisions.
 
+Source repository: [SwayamKhairnar/signal-fraud-workbench](https://github.com/SwayamKhairnar/signal-fraud-workbench).
+
 ## Try the local demo
 
 Requirements: Python 3.14.7, Node.js 22+, [uv](https://docs.astral.sh/uv/). From the project root:
