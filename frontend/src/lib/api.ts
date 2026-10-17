@@ -58,6 +58,7 @@ export type Meta = {
   optional_columns: string[]
   max_bytes: number
   max_rows: number
+  known_merchants: string[]
   known_categories: string[]
   selected_model: string
   model_version: string
@@ -65,12 +66,14 @@ export type Meta = {
   score_meaning: string
 }
 
+
 export type Explanation = {
   transaction_id: string
   risk_score: number
   baseline_log_odds: number
   raw_log_odds: number
   factors: { factor: string; contribution: number }[]
+  plain_english_summary?: string
   unit: string
   interpretation: string
   model_version: string

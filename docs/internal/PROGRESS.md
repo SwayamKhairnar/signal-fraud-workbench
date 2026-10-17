@@ -2,7 +2,7 @@
 
 ## Current stage
 
-Stage D: Phases 1-12 implemented and checked locally. Phase 13's Docker service is built, locally verified under simulated free-tier limits, and pushed to [GitHub](https://github.com/SwayamKhairnar/signal-fraud-workbench); the Render deployment and live URL are not yet verified.
+Stage D: Phases 1-13 implemented. The [Render service](https://signal-fraud-workbench.onrender.com/) is live and its health endpoint loads the saved model. Phase 14 is preserving and deploying the newer local visual and explanation work. Phases 15-20 in the [implementation guide](IMPLEMENTATION_GUIDE.md) cover reliability, blind review, validation error analysis, workload decisions, guided demonstration, and final public acceptance.
 
 The project owner approved the final brief and BankSim, delegated technical choices, and asked the AI to evaluate each phase and continue without routine questions. The original brief's pause checkpoints are superseded by that request.
 
@@ -35,8 +35,9 @@ The project owner approved the final brief and BankSim, delegated technical choi
 
 ## Remaining checks
 
-1. Finish Render sign-in, deploy the GitHub repository, and verify its public URL, 20,000-row memory, and cold start. Render sign-in is currently waiting for the project owner in the visible browser.
-2. Recheck the complete UI at mobile and projector widths when browser control permits it. The browser policy rejected the local page after the initial overview inspection; builds and API tests continue to pass.
+1. Sync the Phase 14 revision to Render and verify the public sample, explanation, and Model Lab UI.
+2. Measure public-host 20,000-row scoring and recheck the UI at mobile and projector widths.
+3. Implement and verify Phases 15-20 in order.
 
 ## Known limitations
 

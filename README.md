@@ -4,6 +4,8 @@ Signal is a college AIML demonstration of **batch fraud decision support** on th
 
 Source repository: [SwayamKhairnar/signal-fraud-workbench](https://github.com/SwayamKhairnar/signal-fraud-workbench).
 
+Public demo: [signal-fraud-workbench.onrender.com](https://signal-fraud-workbench.onrender.com/). The free service can take roughly a minute to wake after inactivity; open it before presenting.
+
 ## Try the local demo
 
 Requirements: Python 3.14.7, Node.js 22+, [uv](https://docs.astral.sh/uv/). From the project root:
@@ -65,10 +67,10 @@ docker build -f deploy/Dockerfile -t signal-fraud-workbench .
 docker run --rm -p 8000:8000 signal-fraud-workbench
 ```
 
-The root [render.yaml](render.yaml) defines one Docker web service on Render's free plan with `/api/health` as the health check. A public URL is added only after deployment and verification. Free instances can sleep after inactivity, so warm the link before a live presentation. Keep public uploads synthetic; this prototype has no accounts or multi-user case storage. Analyst review decisions stay in the browser under a versioned batch-and-model key and can be reset from Alerts.
+The root [render.yaml](render.yaml) defines one Docker web service on Render's free plan with `/api/health` as the health check. The public demo is linked above. Keep public uploads synthetic; this prototype has no accounts or multi-user case storage. Analyst review decisions stay in the browser under a versioned batch-and-model key and can be reset from Alerts.
 
-The same container was tested locally with a 512 MB memory and 0.1 CPU limit. It started in about 15.5 seconds and scored a 20,000-row HTTP upload in 2.64 seconds with about 159 MiB peak cgroup memory. Public-host behavior still needs verification after deployment.
+The same container was tested locally with a 512 MB memory and 0.1 CPU limit. It started in about 15.5 seconds and scored a 20,000-row HTTP upload in 2.64 seconds with about 159 MiB peak cgroup memory. Public-host upload and memory behavior is tracked in the [progress log](docs/internal/PROGRESS.md).
 
 ## Project documents
 
-The original instructions are preserved in [PROJECT_BRIEF.md](PROJECT_BRIEF.md). The approved final brief is in [STAGE_A_REVIEW.md](STAGE_A_REVIEW.md), the numbered plan in [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md), current status in [PROGRESS.md](PROGRESS.md), and a click-by-click presentation script in [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
+The original instructions are preserved in [PROJECT_BRIEF.md](PROJECT_BRIEF.md). The approved final brief is in [docs/internal/STAGE_A_REVIEW.md](docs/internal/STAGE_A_REVIEW.md), the numbered plan in [docs/internal/IMPLEMENTATION_GUIDE.md](docs/internal/IMPLEMENTATION_GUIDE.md), current status in [docs/internal/PROGRESS.md](docs/internal/PROGRESS.md), and a click-by-click presentation script in [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).

@@ -33,6 +33,13 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [view, setView] = useState<'overview' | 'alerts' | 'lab' | 'replay'>('overview')
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('signal-theme') === 'dark')
+
+  // Apply dark mode class to <html>
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
+    localStorage.setItem('signal-theme', darkMode ? 'dark' : 'light')
+  }, [darkMode])
 
   useEffect(() => {
     let active = true
@@ -58,19 +65,59 @@ export default function App() {
   }
 
   const stateLabel = service.kind === 'ready' ? 'Service connected' : service.kind === 'checking' ? 'Checking service' : 'Service unavailable'
+  const merchants = meta?.known_merchants ?? []
 
-  return <div className="site-shell">
-    <header className="topbar">
-      <button className="brand brand-button" onClick={() => { setBatch(null); setError(null) }} aria-label="Signal home"><span className="brand-mark" aria-hidden="true"><span /></span><span>signal<span className="brand-period">.</span></span></button>
-      <div className="topbar-right">
-        {batch && <nav className="top-nav" aria-label="Workbench"><button className={view === 'overview' ? 'active' : ''} onClick={() => setView('overview')}>Overview</button><button className={view === 'alerts' ? 'active' : ''} onClick={() => setView('alerts')}>Alerts</button><button className={view === 'lab' ? 'active' : ''} onClick={() => setView('lab')}>Model Lab</button><button className={view === 'replay' ? 'active' : ''} onClick={() => setView('replay')}>Replay</button></nav>}
-        {!batch && <span className="prototype-label">ANALYST WORKBENCH / PROTOTYPE</span>}
-        <span className={`service-status ${service.kind}`} role="status"><span className="status-dot" />{stateLabel}</span>
-      </div>
-    </header>
+  return (
+    <div className="site-shell">
+      <header className="topbar">
+        <button className="brand brand-button" onClick={() => { setBatch(null); setError(null) }} aria-label="Signal home">
+          <span className="brand-mark" aria-hidden="true"><span /></span>
+          <span>signal<span className="brand-period">.</span></span>
+        </button>
+        <div className="topbar-right">
+          {batch && (
+            <nav className="top-nav" aria-label="Workbench">
+              <button className={view === 'overview' ? 'active' : ''} onClick={() => setView('overview')}>Overview</button>
+              <button className={view === 'alerts' ? 'active' : ''} onClick={() => setView('alerts')}>Alerts</button>
+              <button className={view === 'lab' ? 'active' : ''} onClick={() => setView('lab')}>Model Lab</button>
+              <button className={view === 'replay' ? 'active' : ''} onClick={() => setView('replay')}>Replay</button>
+            </nav>
+          )}
+          {!batch && <span className="prototype-label">ANALYST WORKBENCH / PROTOTYPE</span>}
 
-    {batch ? view === 'overview' ? <Overview batch={batch} onNewBatch={() => { setBatch(null); setError(null) }} /> : view === 'alerts' ? <Alerts batch={batch} /> : view === 'replay' ? <Replay batch={batch} /> : lab ? <ModelLab lab={lab} batch={batch} /> : <main className="dashboard-main"><p role="status">Loading model evidence…</p></main> : <Intake meta={meta} busy={busy} error={error} onDemo={() => void load(scoreDemo)} onFile={file => void load(() => scoreFile(file))} />}
+          {/* Dark mode toggle */}
+          <button
+            className="theme-toggle"
+            onClick={() => setDarkMode(d => !d)}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={darkMode ? 'Light mode' : 'Dark mode'}
+          >
+            {darkMode ? '☀︎' : '☽'}
+          </button>
 
-    <footer><span>Signal · Banking fraud decision-support prototype</span><span>Synthetic data only · Built for an AIML demonstration</span></footer>
-  </div>
+          <span className={`service-status ${service.kind}`} role="status">
+            <span className="status-dot" />{stateLabel}
+          </span>
+        </div>
+      </header>
+
+      {batch
+        ? view === 'overview'
+          ? <Overview batch={batch} onNewBatch={() => { setBatch(null); setError(null) }} />
+          : view === 'alerts'
+            ? <Alerts batch={batch} merchants={merchants} />
+            : view === 'replay'
+              ? <Replay batch={batch} />
+              : lab
+                ? <ModelLab lab={lab} batch={batch} />
+                : <main className="dashboard-main"><p role="status">Loading model evidence…</p></main>
+        : <Intake meta={meta} busy={busy} error={error} onDemo={() => void load(scoreDemo)} onFile={file => void load(() => scoreFile(file))} />
+      }
+
+      <footer>
+        <span>Signal · Banking fraud decision-support prototype</span>
+        <span>Synthetic data only · Built for an AIML demonstration</span>
+      </footer>
+    </div>
+  )
 }

@@ -1,6 +1,6 @@
 # Implementation guide
 
-This is the phase-by-phase build plan for the [approved brief](STAGE_A_REVIEW.md) and [technical specification](TECHNICAL_SPECIFICATION.md). Run commands from the project root unless a command begins with `cd`. Python 3.14.7 and Node 22 are the target runtimes. Each phase leaves the current app runnable. The AI updates `PROGRESS.md` after completing a phase and verifies the listed checks before moving on.
+This is the phase-by-phase build plan for the [approved brief](STAGE_A_REVIEW.md) and [technical specification](../../TECHNICAL_SPECIFICATION.md). Run commands from the project root unless a command begins with `cd`. Python 3.14.7 and Node 22 are the target runtimes. Each phase leaves the current app runnable. The AI updates `PROGRESS.md` after completing a phase and verifies the listed checks before moving on. The owner has authorized technical decisions and continuous work across phases; the checkpoints in the original brief no longer require a pause.
 
 ## Phase 1 — Runnable project foundation
 
@@ -282,3 +282,101 @@ After deployment, open the public URL and run the demo script from a fresh brows
 **Definition of done:** [ ] Public link loads. [ ] Sample upload, alert explanation, threshold, and replay work there. [ ] Tested cap fits host memory. [ ] No raw upload survives processing. [ ] Public URL and known free-tier wake-up behavior are documented.
 
 **Demo-ability:** Complete end-to-end presentation from the public link.
+
+## Phase 14 — Preserve and deploy the current revision
+
+**Goal:** The current local visual and explanation changes become a reproducible public baseline before further work.
+
+**Tasks:** 1. Review all uncommitted files and document validation example batches. 2. Fix documentation links and record the real public URL. 3. Run backend tests and frontend build. 4. Commit and push the current revision. 5. Sync Render and verify the public sample, explanation, and Model Lab endpoints and UI.
+
+**Files:** `README.md`, `data/README.md`, `docs/internal/PROGRESS.md`, the already changed frontend/backend files, and `data/sample_val_*.csv` if their source is verified.
+
+**Run/test:** `.venv/bin/python -m pytest backend/tests -q`, `cd frontend && npm run build`, then check the public `/api/health` and sample flow after the deployment becomes live.
+
+**Definition of done:** [ ] Commit is pushed. [ ] Render serves its new frontend bundle. [ ] Public sample and explanation agree with local model scores. [ ] Documentation links resolve.
+
+**Demo-ability:** The public link shows the latest polished baseline.
+
+## Phase 15 — Correctness and resilience
+
+**Goal:** Switching cases, editing what-if inputs, moving thresholds, and loading the service never display stale or misleading state.
+
+**Tasks:** 1. Reset scenario results when inputs change and show the actual scenario threshold. 2. Reset case errors on row change and keep selection inside the filtered queue. 3. Handle missing metadata/Model Lab with retry states. 4. Bound queue rendering. 5. Add focused interaction checks for these failures.
+
+**Files:** `frontend/src/app/App.tsx`, `frontend/src/pages/Alerts.tsx`, `frontend/src/pages/CaseDetail.tsx`, `frontend/src/components/WhatIf.tsx`, frontend test files.
+
+**Run/test:** `cd frontend && npm run build` plus browser interaction checks on sample, one invalid upload, and a low threshold.
+
+**Definition of done:** [ ] No stale what-if result or case error. [ ] Threshold/filter changes never leave a hidden selected case. [ ] Partial API failure has a visible retry. [ ] Large queues remain usable.
+
+**Demo-ability:** Reliable exploration during questions from a teacher.
+
+## Phase 16 — Blind analyst review
+
+**Goal:** The analyst can judge cases without seeing the answer, then reveal labels to learn from disagreement.
+
+**Tasks:** 1. Hide source labels in the queue and case panel by default. 2. Add a deliberate reveal action for labeled batches. 3. Compare saved browser-local decisions with revealed labels without altering metrics. 4. Make unlabeled uploads use the same review UI without a reveal option.
+
+**Files:** `frontend/src/pages/Alerts.tsx`, `frontend/src/pages/CaseDetail.tsx`, `frontend/src/lib/reviews.ts`, frontend checks.
+
+**Run/test:** Review sample cases before and after reveal; verify no source label appears in blind mode or on an unlabeled upload.
+
+**Definition of done:** [ ] Blind mode has no label leakage. [ ] Reveal is explicit. [ ] Decisions persist per batch in this browser. [ ] Ground truth and analyst decisions remain separate.
+
+**Demo-ability:** Five-case analyst challenge with a reveal at the end.
+
+## Phase 17 — Validation error analysis
+
+**Goal:** Show where the model succeeds and fails without adapting to the final test set.
+
+**Tasks:** 1. Produce a versioned, compact validation-period artifact from the saved model with counts and confusion by amount band, category, and simulation period. 2. Expose it through a read-only API. 3. Add an Error Analysis view with segment filters, honest small-sample warnings, and a few anonymized missed-fraud examples. 4. Keep the fixed final-test Model Lab results separate.
+
+**Files:** `ml/build_error_analysis.py`, `ml/artifacts/validation_analysis.json`, `backend/app/api.py`, `backend/tests/*`, `frontend/src/pages/ErrorAnalysis.tsx`, `frontend/src/lib/api.ts`.
+
+**Run/test:** Rebuild the artifact from `data/processed/validation.csv`; test aggregate counts against saved validation metrics; run backend tests and frontend build.
+
+**Definition of done:** [ ] Segment counts sum correctly. [ ] Data source is visibly validation, not final test. [ ] Low-amount misses and uncertainty from small groups are clear. [ ] No new model choice uses final-test labels.
+
+**Demo-ability:** Explain a concrete model blind spot and a measured improvement hypothesis.
+
+## Phase 18 — Workload and cost exploration
+
+**Goal:** Make the threshold a transparent review-budget decision.
+
+**Tasks:** 1. Plot validation fraud caught against alert workload across thresholds. 2. Connect the current batch slider to exact score-based metrics and reviewed-row counts. 3. Relabel the cost panel as an illustrative scenario, remove unearned rupee assumptions, and state all inputs. 4. Keep one-class and unlabeled states honest.
+
+**Files:** `ml/artifacts/validation_analysis.json`, `frontend/src/pages/Alerts.tsx`, `frontend/src/pages/ErrorAnalysis.tsx`, frontend checks.
+
+**Run/test:** Verify plotted threshold points against validation scores and queue counts; run the build and check slider extremes in the browser.
+
+**Definition of done:** [ ] Workload/recall arithmetic matches the source data. [ ] No cost is presented as a real bank estimate. [ ] The slider remains usable at the saved threshold.
+
+**Demo-ability:** Answer “How many alerts can analysts handle?” with a visible tradeoff.
+
+## Phase 19 — Explanation comparison and guided demo
+
+**Goal:** Make scenario changes and the presentation story easier to understand.
+
+**Tasks:** 1. Display the change in each model contribution between original and hypothetical rows. 2. Add a concise guided sample path through review, threshold, model limitations, and replay. 3. Ensure reduced motion and keyboard use still work. 4. Update the demo script.
+
+**Files:** `frontend/src/components/WhatIf.tsx`, `frontend/src/app/App.tsx`, `frontend/src/styles.css`, `docs/DEMO_SCRIPT.md`.
+
+**Run/test:** Complete the guide from a fresh browser and compare explanation sums and scenario scores; run backend tests and frontend build.
+
+**Definition of done:** [ ] Scenario delta is faithful to model contributions. [ ] Guide can be skipped. [ ] Demo fits about five minutes. [ ] No visual step implies real-time training or calibrated risk.
+
+**Demo-ability:** A cohesive teacher presentation with a clear ML limitation and human response.
+
+## Phase 20 — Final public acceptance
+
+**Goal:** The latest version is deployed, documented, and ready to present.
+
+**Tasks:** 1. Run all tests and review every new surface at laptop and mobile widths. 2. Push a clean source revision and sync Render. 3. Test the public sample, blind review, error analysis, workload control, scenario, replay, and report. 4. Record cold-start behavior and known limitations.
+
+**Files:** `README.md`, `docs/DEMO_SCRIPT.md`, `docs/internal/PROGRESS.md`, any files needed to fix acceptance failures.
+
+**Run/test:** `.venv/bin/python -m pytest backend/tests -q`, `cd frontend && npm run build`, followed by the public click-by-click demo.
+
+**Definition of done:** [ ] Public link serves the new revision. [ ] Core workflow and new features pass live checks. [ ] Repository is clean and docs match the app.
+
+**Demo-ability:** Final public AIML MVP.

@@ -2,7 +2,7 @@
 
 ## Before the presentation
 
-1. Start the local API and frontend using `README.md`, or open the verified public link when available. On a free host, open it once before the presentation to allow a cold start.
+1. Open the [public demo](https://signal-fraud-workbench.onrender.com/) before the presentation to allow the free host to wake. The local API and frontend in `README.md` are a fallback.
 2. Confirm the header says **Service connected**. Keep `data/sample_labeled.csv` as a fallback file. Do not use real customer data.
 3. Use a laptop viewport or projector resolution. A fresh browser tab gives the cleanest path.
 
