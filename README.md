@@ -74,4 +74,4 @@ The same container was tested locally with a 512 MB memory and 0.1 CPU limit. It
 
 ## Project documents
 
-The original instructions are preserved in [PROJECT_BRIEF.md](PROJECT_BRIEF.md). The approved final brief is in [docs/internal/STAGE_A_REVIEW.md](docs/internal/STAGE_A_REVIEW.md), the numbered plan in [docs/internal/IMPLEMENTATION_GUIDE.md](docs/internal/IMPLEMENTATION_GUIDE.md), current status in [docs/internal/PROGRESS.md](docs/internal/PROGRESS.md), and a click-by-click presentation script in [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
+Start with the [team technical and presentation guide](docs/TEAM_TECHNICAL_GUIDE.md) for the complete ML story, architecture, measured results, walkthrough, and teacher Q&A. The original instructions are preserved in [PROJECT_BRIEF.md](PROJECT_BRIEF.md). The approved final brief is in [docs/internal/STAGE_A_REVIEW.md](docs/internal/STAGE_A_REVIEW.md), the numbered plan in [docs/internal/IMPLEMENTATION_GUIDE.md](docs/internal/IMPLEMENTATION_GUIDE.md), current status in [docs/internal/PROGRESS.md](docs/internal/PROGRESS.md), and a click-by-click presentation script in [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
