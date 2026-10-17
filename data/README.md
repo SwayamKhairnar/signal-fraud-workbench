@@ -1,6 +1,6 @@
 # BankSim data
 
-Source: [BankSim on Kaggle](https://www.kaggle.com/datasets/ealaxi/banksim1), from Edgar Alonso Lopez-Rojas and Stefan Axelsson's [BankSim paper](https://www.msc-les.org/proceedings/emss/2014/EMSS2014_144.pdf). Kaggle reports the dataset license as **CC BY-NC-SA 4.0**. The bundled derived development sample is attributed to the authors and shared under the same license for this noncommercial college project. Do not use the data for a commercial deployment without checking the license.
+Source: [BankSim on Kaggle](https://www.kaggle.com/datasets/ealaxi/banksim1), from Edgar Alonso Lopez-Rojas and Stefan Axelsson's [BankSim paper](https://www.msc-les.org/proceedings/emss/2014/EMSS2014_144.pdf). Kaggle reports the dataset license as [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). The bundled derived samples are attributed to the authors and shared under the same license for this noncommercial college project. Do not use the data for a commercial deployment without checking the license.
 
 The original CSV is not committed to the repository. Download it with the Kaggle CLI:
 
