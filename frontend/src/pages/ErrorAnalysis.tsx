@@ -11,7 +11,13 @@ export default function ErrorAnalysis({ analysis }: { analysis: ValidationAnalys
   const [selected, setSelected] = useState<string | null>(null)
   const groups = slice === 'amount' ? analysis.by_amount : slice === 'category' ? analysis.by_category.filter(group => group.fraud > 0) : analysis.by_period
   const chosen = groups.find(group => group.name === selected) ?? groups[0]
-  const chart = groups.map(group => ({ name: slice === 'category' ? categoryName(group.name) : group.name.replace(' units', ''), recall: (group.recall ?? 0) * 100, fraud: group.fraud }))
+  const chart = groups.map((group, index) => ({
+    name: slice === 'category' ? categoryName(group.name)
+      : slice === 'amount' ? (index === 0 ? `≤${group.max_amount}` : index === groups.length - 1 ? `>${groups[index - 1].max_amount}` : `${groups[index - 1].max_amount}–${group.max_amount}`)
+        : group.name,
+    recall: (group.recall ?? 0) * 100,
+    fraud: group.fraud,
+  }))
   const lowAmount = analysis.by_amount.slice(0, -1).reduce((totals, group) => ({ fraud: totals.fraud + group.fraud, tp: totals.tp + group.tp }), { fraud: 0, tp: 0 })
 
   return (

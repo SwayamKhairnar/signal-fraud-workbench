@@ -12,7 +12,7 @@ type Props = {
 }
 
 export default function WhatIf({ row, original, categories, merchants }: Props) {
-  const [amount, setAmount] = useState(String(row.amount))
+  const [amount, setAmount] = useState(row.amount.toFixed(2))
   const [step, setStep] = useState(String(row.step))
   const [category, setCategory] = useState(row.category)
   const [merchant, setMerchant] = useState(row.merchant)

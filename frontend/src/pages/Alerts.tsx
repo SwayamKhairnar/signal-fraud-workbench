@@ -184,7 +184,7 @@ export default function Alerts({ batch, merchants }: Props) {
                       <strong>{row.transaction_id}</strong>
                       <small>
                         {row.category.replace(/^es_/, '')} · day {row.step}
-                        {reviews[row.transaction_id] ? ` · ${reviews[row.transaction_id].replaceAll('_', ' ')}` : ''}
+                        {reviews[row.transaction_id] ? ` · analyst: ${reviews[row.transaction_id].replaceAll('_', ' ')}` : ''}
                       </small>
                     </span>
                     <span className="queue-amount">

@@ -2,7 +2,7 @@
 
 ## Current stage
 
-Stage D: Phases 1-14 complete. Commit `09a8ee1` is live on the [Render service](https://signal-fraud-workbench.onrender.com/); the public sample scores 2,000 rows with 16 alerts and the explanation endpoint responds. Phases 15-19 are implemented locally and are undergoing final acceptance before the Phase 20 public deployment. The [implementation guide](IMPLEMENTATION_GUIDE.md) records each phase.
+Stage D: Phases 1-19 are implemented and live on the [Render service](https://signal-fraud-workbench.onrender.com/). The public sample scores 2,000 rows with 16 alerts, and blind review, validation error analysis, workload controls, explanations, and replay have passed browser checks. Phase 20 final acceptance is in progress. The [implementation guide](IMPLEMENTATION_GUIDE.md) records each phase.
 
 The project owner approved the final brief and BankSim, delegated technical choices, and asked the AI to evaluate each phase and continue without routine questions. The original brief's pause checkpoints are superseded by that request.
 
@@ -24,11 +24,11 @@ The project owner approved the final brief and BankSim, delegated technical choi
 | 12 | Reliability and demo script | 13 backend tests pass; frontend build passes; 20k-row sample scored locally |
 | 13 | Single-service package | Docker image built; health, frontend, sample scoring, explanations, and 20k-row upload verified locally at 512 MB / 0.1 CPU; public source repository pushed |
 | 14 | Preserve newer visual baseline and deploy | Commit `09a8ee1` pushed; Render deploy succeeded; public sample and explanation API verified |
-| 15 | Correctness and resilience | Local frontend build: stale scenarios/errors reset, queue bounded to 100 rows per page, retry states added; browser acceptance pending |
-| 16 | Blind review | Local frontend build: source labels hidden until reveal, decision comparison separate from metrics; browser acceptance pending |
-| 17 | Validation error analysis | 128,820-row validation artifact generated; 14 backend tests pass; frontend build passes; browser acceptance pending |
-| 18 | Workload and illustrative cost | Validation workload chart and noncurrency penalty scenario implemented; build passes; browser acceptance pending |
-| 19 | Contribution comparison and demo guide | Local frontend build passes; browser acceptance pending |
+| 15 | Correctness and resilience | Public stale-scenario reset verified; 2,000-alert queue paged at 100 rows; retries added; build passes |
+| 16 | Blind review | Public labels hidden until explicit reveal, decision comparison verified against known sample labels |
+| 17 | Validation error analysis | 128,820-row validation artifact and public view verified; 14 backend tests pass |
+| 18 | Workload and illustrative cost | Public threshold extremes checked: 0% flags 2,000/2,000 and reports 20/20 fraud caught; penalty points and validation curve visible |
+| 19 | Contribution comparison and demo guide | Public five-step walkthrough, scenario factor changes, and 20x replay verified; frontend build passes |
 
 ## Model and data decisions
 
@@ -41,12 +41,11 @@ The project owner approved the final brief and BankSim, delegated technical choi
 
 ## Remaining checks
 
-1. Finish Phase 15-19 browser acceptance, correct any issues, and commit the new artifact and UI work.
-2. Deploy the final commit and verify all new public flows. A 20,000-row synthetic upload already returned HTTP 200 from Render in 4.36 seconds with 210 alerts; final revision still needs the same acceptance check.
-3. Recheck the UI at mobile and projector widths, then close Phase 20.
+1. Deploy the final polish commit and verify the new bundle publicly. A 20,000-row synthetic upload returned HTTP 200 from Render in 4.36 seconds with 210 alerts on the Phase 19 revision.
+2. Finish the mobile and laptop acceptance pass, including public report download, then close Phase 20.
 
 ## Known limitations
 
 - This is a synthetic decision-support demo with no live bank data or real-world calibration.
-- The 5 MB/20,000-row limit took 0.23 seconds for an in-process request and 252,596 KB peak process memory on this machine. In Docker constrained to 512 MB and 0.1 CPU, startup took 15.54 seconds, a 20,000-row HTTP upload took 2.64 seconds, and peak cgroup memory was 166,694,912 bytes (about 159 MiB). The deployed free host still needs its own measurement.
+- The 5 MB/20,000-row limit took 0.23 seconds for an in-process request and 252,596 KB peak process memory on this machine. In Docker constrained to 512 MB and 0.1 CPU, startup took about 25 seconds on the final image; a 20,000-row HTTP upload took 2.64 seconds on the earlier image, and peak cgroup memory was 166,694,912 bytes (about 159 MiB). The public Render request took 4.36 seconds. Free-host cold starts vary.
 - Render free services sleep after inactivity, and uploaded rows disappear after refresh. Review decisions persist only in the same browser until reset.

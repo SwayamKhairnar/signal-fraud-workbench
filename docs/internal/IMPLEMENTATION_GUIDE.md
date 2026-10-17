@@ -293,7 +293,7 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Run/test:** `.venv/bin/python -m pytest backend/tests -q`, `cd frontend && npm run build`, then check the public `/api/health` and sample flow after the deployment becomes live.
 
-**Definition of done:** [ ] Commit is pushed. [ ] Render serves its new frontend bundle. [ ] Public sample and explanation agree with local model scores. [ ] Documentation links resolve.
+**Definition of done:** [x] Commit is pushed. [x] Render serves its new frontend bundle. [x] Public sample and explanation agree with local model scores. [x] Documentation links resolve.
 
 **Demo-ability:** The public link shows the latest polished baseline.
 
@@ -307,7 +307,7 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Run/test:** `cd frontend && npm run build` plus browser interaction checks on sample, one invalid upload, and a low threshold.
 
-**Definition of done:** [ ] No stale what-if result or case error. [ ] Threshold/filter changes never leave a hidden selected case. [ ] Partial API failure has a visible retry. [ ] Large queues remain usable.
+**Definition of done:** [x] No stale what-if result or case error. [x] Threshold/filter changes never leave a hidden selected case. [x] Partial API failure has a visible retry. [x] Large queues remain usable.
 
 **Demo-ability:** Reliable exploration during questions from a teacher.
 
@@ -321,7 +321,7 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Run/test:** Review sample cases before and after reveal; verify no source label appears in blind mode or on an unlabeled upload.
 
-**Definition of done:** [ ] Blind mode has no label leakage. [ ] Reveal is explicit. [ ] Decisions persist per batch in this browser. [ ] Ground truth and analyst decisions remain separate.
+**Definition of done:** [x] Blind mode has no label leakage. [x] Reveal is explicit. [x] Decisions persist per batch in this browser. [x] Ground truth and analyst decisions remain separate.
 
 **Demo-ability:** Five-case analyst challenge with a reveal at the end.
 
@@ -335,7 +335,7 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Run/test:** `.venv/bin/python -m ml.build_error_analysis`; test aggregate counts against saved validation metrics; run backend tests and frontend build.
 
-**Definition of done:** [ ] Segment counts sum correctly. [ ] Data source is visibly validation, not final test. [ ] Low-amount misses and uncertainty from small groups are clear. [ ] No new model choice uses final-test labels.
+**Definition of done:** [x] Segment counts sum correctly. [x] Data source is visibly validation, not final test. [x] Low-amount misses and uncertainty from small groups are clear. [x] No new model choice uses final-test labels.
 
 **Demo-ability:** Explain a concrete model blind spot and a measured improvement hypothesis.
 
@@ -349,7 +349,7 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Run/test:** Verify plotted threshold points against validation scores and queue counts; run the build and check slider extremes in the browser.
 
-**Definition of done:** [ ] Workload/recall arithmetic matches the source data. [ ] No cost is presented as a real bank estimate. [ ] The slider remains usable at the saved threshold.
+**Definition of done:** [x] Workload/recall arithmetic matches the source data. [x] No cost is presented as a real bank estimate. [x] The slider remains usable at the saved threshold.
 
 **Demo-ability:** Answer “How many alerts can analysts handle?” with a visible tradeoff.
 
@@ -363,7 +363,7 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Run/test:** Complete the guide from a fresh browser and compare explanation sums and scenario scores; run backend tests and frontend build.
 
-**Definition of done:** [ ] Scenario delta is faithful to model contributions. [ ] Guide can be skipped. [ ] Demo fits about five minutes. [ ] No visual step implies real-time training or calibrated risk.
+**Definition of done:** [x] Scenario delta is faithful to model contributions. [x] Guide can be skipped. [x] Demo fits about five minutes. [x] No visual step implies real-time training or calibrated risk.
 
 **Demo-ability:** A cohesive teacher presentation with a clear ML limitation and human response.
 
