@@ -1,0 +1,177 @@
+{
+  "artifact_version": "banksim-v1-001",
+  "created_at_utc": "2026-10-17T12:01:27.449472+00:00",
+  "dataset_source": {
+    "url": "https://www.kaggle.com/datasets/ealaxi/banksim1",
+    "file": "bs140513_032310.csv",
+    "sha256": "e37006f76d993bfaec3a02d717b4f0bdc1ebfa5d36449e91fb7c07e225278377",
+    "license": "CC-BY-NC-SA-4.0"
+  },
+  "split": {
+    "train": {
+      "file": "data/processed/train.csv",
+      "step_min": 0,
+      "step_max": 107,
+      "distinct_steps": 108,
+      "rows": 332592,
+      "fraud_rows": 4320,
+      "fraud_rate": 0.012988887285322557
+    },
+    "validation": {
+      "file": "data/processed/validation.csv",
+      "step_min": 108,
+      "step_max": 143,
+      "distinct_steps": 36,
+      "rows": 128820,
+      "fraud_rows": 1440,
+      "fraud_rate": 0.011178388448998603
+    },
+    "test": {
+      "file": "data/processed/test.csv",
+      "step_min": 144,
+      "step_max": 179,
+      "distinct_steps": 36,
+      "rows": 133231,
+      "fraud_rows": 1440,
+      "fraud_rate": 0.010808295366693938
+    }
+  },
+  "model_features": [
+    "step",
+    "log_amount",
+    "merchant",
+    "category"
+  ],
+  "transformed_features": [
+    "numeric__step",
+    "numeric__log_amount",
+    "categorical__merchant_M1053599405",
+    "categorical__merchant_M117188757",
+    "categorical__merchant_M1198415165",
+    "categorical__merchant_M1294758098",
+    "categorical__merchant_M1313686961",
+    "categorical__merchant_M1352454843",
+    "categorical__merchant_M1353266412",
+    "categorical__merchant_M1400236507",
+    "categorical__merchant_M1416436880",
+    "categorical__merchant_M151143676",
+    "categorical__merchant_M1535107174",
+    "categorical__merchant_M1600850729",
+    "categorical__merchant_M1649169323",
+    "categorical__merchant_M1726401631",
+    "categorical__merchant_M17379832",
+    "categorical__merchant_M1741626453",
+    "categorical__merchant_M1748431652",
+    "categorical__merchant_M1788569036",
+    "categorical__merchant_M1823072687",
+    "categorical__merchant_M1842530320",
+    "categorical__merchant_M1872033263",
+    "categorical__merchant_M1873032707",
+    "categorical__merchant_M1888755466",
+    "categorical__merchant_M1913465890",
+    "categorical__merchant_M1946091778",
+    "categorical__merchant_M2011752106",
+    "categorical__merchant_M2080407379",
+    "categorical__merchant_M209847108",
+    "categorical__merchant_M2122776122",
+    "categorical__merchant_M348875670",
+    "categorical__merchant_M348934600",
+    "categorical__merchant_M349281107",
+    "categorical__merchant_M3697346",
+    "categorical__merchant_M45060432",
+    "categorical__merchant_M480139044",
+    "categorical__merchant_M495352832",
+    "categorical__merchant_M50039827",
+    "categorical__merchant_M547558035",
+    "categorical__merchant_M677738360",
+    "categorical__merchant_M692898500",
+    "categorical__merchant_M732195782",
+    "categorical__merchant_M78078399",
+    "categorical__merchant_M840466850",
+    "categorical__merchant_M855959430",
+    "categorical__merchant_M857378720",
+    "categorical__merchant_M85975013",
+    "categorical__merchant_M923029380",
+    "categorical__merchant_M933210764",
+    "categorical__merchant_M97925176",
+    "categorical__merchant_M980657600",
+    "categorical__category_es_barsandrestaurants",
+    "categorical__category_es_contents",
+    "categorical__category_es_fashion",
+    "categorical__category_es_food",
+    "categorical__category_es_health",
+    "categorical__category_es_home",
+    "categorical__category_es_hotelservices",
+    "categorical__category_es_hyper",
+    "categorical__category_es_leisure",
+    "categorical__category_es_otherservices",
+    "categorical__category_es_sportsandtoys",
+    "categorical__category_es_tech",
+    "categorical__category_es_transportation",
+    "categorical__category_es_travel",
+    "categorical__category_es_wellnessandbeauty"
+  ],
+  "training_rows": 332592,
+  "validation_rows": 128820,
+  "validation": {
+    "logistic": {
+      "average_precision": 0.8811617851944085,
+      "threshold": 0.4271416930097678,
+      "alert_rate": 0.010246856078248719,
+      "precision": 0.8477272727272728,
+      "recall": 0.7770833333333333,
+      "f1": 0.8108695652173913
+    },
+    "lightgbm": {
+      "average_precision": 0.9026170367297331,
+      "threshold": 0.32288915357204967,
+      "alert_rate": 0.010037261294829996,
+      "precision": 0.8747099767981439,
+      "recall": 0.7854166666666667,
+      "f1": 0.8276619099890231
+    }
+  },
+  "validation_reference": {
+    "transaction_ids": [
+      "BKS-0332593",
+      "BKS-0332594",
+      "BKS-0332595",
+      "BKS-0332596",
+      "BKS-0332597"
+    ],
+    "scores": {
+      "logistic": [
+        5.920592815418899e-08,
+        3.5524316764457737e-05,
+        3.272071725509571e-05,
+        2.9531460345582507e-06,
+        1.650083770842426e-05
+      ],
+      "lightgbm": [
+        1.9606719989391832e-05,
+        1.7223428081252918e-05,
+        1.7223428081252918e-05,
+        1.7223428081252918e-05,
+        1.7223428081252918e-05
+      ]
+    }
+  },
+  "selection_rule": "Use LightGBM only if validation AP improves by >=0.02 absolute and recall at max 5% alert rate is not lower than logistic; otherwise logistic",
+  "selected_model": "lightgbm",
+  "default_threshold": 0.32288915357204967,
+  "packages": {
+    "python": "3.14.7",
+    "scikit_learn": "1.9.1",
+    "lightgbm": "4.7.0",
+    "pandas": "2.3.3",
+    "numpy": "2.4.6"
+  },
+  "test_evaluated": true,
+  "test_results_file": "model_lab.json",
+  "demo_sample": {
+    "file": "data/sample_labeled.csv",
+    "rows": 2000,
+    "fraud_rows": 20,
+    "origin": "first 2000 chronological test rows; no score or label selection"
+  }
+}
