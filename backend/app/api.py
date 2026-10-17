@@ -70,6 +70,11 @@ def model_lab() -> dict:
     return service.model_lab
 
 
+@router.get("/validation-analysis")
+def validation_analysis() -> dict:
+    return service.validation_analysis
+
+
 @router.post("/explain")
 def explain_row(payload: ExplainRow) -> dict:
     row = payload.model_dump()

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReasonBars from '../components/ReasonBars'
 import { explainTransaction, type Explanation, type Transaction } from '../lib/api'
 import type { ReviewStatus } from '../lib/reviews'
@@ -68,6 +68,7 @@ type Props = {
   onReview: (status: ReviewStatus | null) => void
   categories: string[]
   merchants: string[]
+  showLabel: boolean
   /** Sibling rows in the visible queue — used for keyboard navigation */
   queue?: Transaction[]
   onSelectRow?: (row: Transaction) => void
@@ -82,13 +83,14 @@ export default function CaseDetail({
   onReview,
   categories,
   merchants,
+  showLabel,
   queue = [],
   onSelectRow,
 }: Props) {
   const [error, setError] = useState('')
-  const asideRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
+    setError('')
     if (cache[row.transaction_id]) return
     let active = true
     explainTransaction(row)
@@ -116,10 +118,10 @@ export default function CaseDetail({
   const explanation = cache[row.transaction_id]
   const queueIdx = queue.findIndex(r => r.transaction_id === row.transaction_id)
   const hasPrev = queueIdx > 0
-  const hasNext = queueIdx < queue.length - 1
+  const hasNext = queueIdx >= 0 && queueIdx < queue.length - 1
 
   return (
-    <aside className="case-detail" aria-label={`Case ${row.transaction_id}`} ref={asideRef}>
+    <aside className="case-detail" aria-label={`Case ${row.transaction_id}`}>
       <div className="case-header">
         <div>
           <p className="section-kicker">TRANSACTION DETAIL</p>
@@ -162,7 +164,7 @@ export default function CaseDetail({
         <div><dt>Simulation day</dt><dd>{row.step}</dd></div>
         <div><dt>Category</dt><dd>{row.category.replace(/^es_/, '').replace(/and/g, ' & ')}</dd></div>
         <div><dt>Merchant code</dt><dd>{row.merchant}</dd></div>
-        {row.fraud !== undefined && (
+        {showLabel && row.fraud !== undefined && (
           <div>
             <dt>Known label</dt>
             <dd>{row.fraud ? '🔴 Fraud' : '🟢 Legitimate'}</dd>
@@ -204,7 +206,7 @@ export default function CaseDetail({
         {review && <button className="clear-review" onClick={() => onReview(null)}>Clear decision</button>}
       </div>
 
-      <WhatIf key={row.transaction_id} row={row} categories={categories} merchants={merchants} />
+      <WhatIf key={row.transaction_id} row={row} original={explanation} categories={categories} merchants={merchants} />
     </aside>
   )
 }

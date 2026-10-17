@@ -24,6 +24,9 @@ class ScoringService:
     def __init__(self, artifact_dir: Path = ARTIFACT_DIR):
         self.manifest = json.loads((artifact_dir / "manifest.json").read_text(encoding="utf-8"))
         self.model_lab = json.loads((artifact_dir / "model_lab.json").read_text(encoding="utf-8"))
+        self.validation_analysis = json.loads((artifact_dir / "validation_analysis.json").read_text(encoding="utf-8"))
+        if self.validation_analysis["artifact_version"] != self.manifest["artifact_version"]:
+            raise RuntimeError("Validation analysis version does not match the model manifest")
         self.preprocessor = joblib.load(artifact_dir / "preprocessor.joblib")
         self.model = joblib.load(artifact_dir / f"{self.manifest['selected_model']}.joblib")
         self.merchants = set(map(str, self.preprocessor.named_transformers_["categorical"].categories_[0]))

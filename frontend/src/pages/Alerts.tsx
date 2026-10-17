@@ -44,6 +44,8 @@ export default function Alerts({ batch, merchants }: Props) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
   const [selected, setSelected] = useState<Transaction | null>(null)
+  const [shownCount, setShownCount] = useState(100)
+  const [labelsRevealed, setLabelsRevealed] = useState(false)
   const [cache, setCache] = useState<Record<string, Explanation>>({})
   const [threshold, setThreshold] = useState(batch.default_threshold)
   const [reviews, setReviews] = useState<Reviews>(() => loadReviews(batch.batch_hash, batch.model_version))
@@ -69,6 +71,17 @@ export default function Alerts({ batch, merchants }: Props) {
     (category === 'all' || row.category === category) &&
     (!query || row.transaction_id.toLowerCase().includes(query.toLowerCase()) || row.merchant.toLowerCase().includes(query.toLowerCase()))
   )
+  const displayed = visible.slice(0, shownCount)
+  const decisions = batch.rows.filter(row => reviews[row.transaction_id] === 'confirmed_fraud' || reviews[row.transaction_id] === 'false_alarm')
+  const matchingDecisions = decisions.filter(row =>
+    (reviews[row.transaction_id] === 'confirmed_fraud' && row.fraud === 1) ||
+    (reviews[row.transaction_id] === 'false_alarm' && row.fraud === 0)
+  ).length
+
+  function resetQueueView() {
+    setSelected(null)
+    setShownCount(100)
+  }
 
   return (
     <main className="dashboard-main alerts-main">
@@ -92,6 +105,21 @@ export default function Alerts({ batch, merchants }: Props) {
         <p>Scores help prioritize human review. A flag is not a confirmed fraud finding.</p>
       </div>
 
+      {batch.mode === 'evaluation' && (
+        <section className="blind-review-panel" aria-label="Blind analyst review">
+          <div>
+            <h2>{labelsRevealed ? 'Known outcomes revealed' : 'Blind analyst review'}</h2>
+            <p>{labelsRevealed
+              ? 'Compare your browser-local decisions with the source labels. These decisions do not change model metrics.'
+              : 'Source fraud labels are hidden in the queue and case details. Review cases first, then reveal their known outcomes.'}</p>
+            {labelsRevealed && <p className="review-match">{matchingDecisions} of {decisions.length} fraud/false-alarm decisions match the known labels.</p>}
+          </div>
+          <button className="secondary-button" onClick={() => setLabelsRevealed(value => !value)}>
+            {labelsRevealed ? 'Hide known outcomes' : 'Reveal known outcomes'}
+          </button>
+        </section>
+      )}
+
       <section className="threshold-panel">
         <div>
           <h2>Adjust alert workload</h2>
@@ -102,12 +130,12 @@ export default function Alerts({ batch, merchants }: Props) {
           id="threshold-slider"
           type="range"
           min="0"
-          max="100"
+          max="1000"
           step="1"
-          value={Math.round(threshold * 100)}
-          onChange={event => setThreshold(Number(event.target.value) / 100)}
+          value={Math.round(threshold * 1000)}
+          onChange={event => { resetQueueView(); setThreshold(Number(event.target.value) / 1000) }}
         />
-        <button onClick={() => setThreshold(batch.default_threshold)}>Reset to saved threshold</button>
+        <button onClick={() => { resetQueueView(); setThreshold(batch.default_threshold) }}>Reset to saved threshold</button>
         {batch.mode === 'evaluation' && (
           <div className="threshold-metrics">
             <MetricBadge label="Precision" value={percent(metrics.precision)} />
@@ -121,17 +149,17 @@ export default function Alerts({ batch, merchants }: Props) {
 
       {/* Cost Calculator — F5 from analysis */}
       {batch.mode === 'evaluation' && (
-        <CostCalculator tp={metrics.confusion.tp} fp={metrics.confusion.fp} fn={metrics.confusion.fn} />
+        <CostCalculator fp={metrics.confusion.fp} fn={metrics.confusion.fn} />
       )}
 
       <div className="queue-tools">
         <label>
           Search ID or merchant
-          <input type="search" placeholder="Find a transaction…" value={query} onChange={event => setQuery(event.target.value)} />
+          <input type="search" placeholder="Find a transaction…" value={query} onChange={event => { resetQueueView(); setQuery(event.target.value) }} />
         </label>
         <label>
           Category
-          <select value={category} onChange={event => setCategory(event.target.value)}>
+          <select value={category} onChange={event => { resetQueueView(); setCategory(event.target.value) }}>
             <option value="all">All categories</option>
             {categories.map(value => <option value={value} key={value}>{value.replace(/^es_/, '')}</option>)}
           </select>
@@ -144,7 +172,7 @@ export default function Alerts({ batch, merchants }: Props) {
           {visible.length
             ? (
               <div className="queue-list">
-                {visible.map((row, index) => (
+                {displayed.map((row, index) => (
                   <button
                     type="button"
                     className={`queue-row ${selected?.transaction_id === row.transaction_id ? 'selected' : ''}`}
@@ -163,8 +191,8 @@ export default function Alerts({ batch, merchants }: Props) {
                       {row.amount.toLocaleString('en', { maximumFractionDigits: 2 })} <small>units</small>
                     </span>
                     {/* Fraud label indicator — F9 */}
-                    {row.fraud !== undefined && (
-                      <span className={`queue-fraud-dot ${row.fraud === 1 ? 'fraud' : 'legit'}`} title={row.fraud === 1 ? 'Known fraud' : 'Known legitimate'} />
+                    {labelsRevealed && row.fraud !== undefined && (
+                      <span className={`queue-fraud-dot ${row.fraud === 1 ? 'fraud' : 'legit'}`} title={row.fraud === 1 ? 'Known fraud' : 'Known legitimate'} aria-label={row.fraud === 1 ? 'Known fraud' : 'Known legitimate'} />
                     )}
                     <span className="queue-risk">{percent(row.risk_score)}</span>
                     <span className="queue-arrow">↗</span>
@@ -174,6 +202,11 @@ export default function Alerts({ batch, merchants }: Props) {
             )
             : <div className="queue-empty">No alerts match these filters. Clear the search or choose another category.</div>
           }
+          {visible.length > shownCount && (
+            <button className="secondary-button queue-more" onClick={() => setShownCount(count => count + 100)}>
+              Show next {Math.min(100, visible.length - shownCount)} of {whole.format(visible.length)} alerts
+            </button>
+          )}
         </div>
 
         {selected && (
@@ -186,7 +219,8 @@ export default function Alerts({ batch, merchants }: Props) {
             onReview={status => reviewCase(selected.transaction_id, status)}
             categories={categories}
             merchants={merchants}
-            queue={visible}
+            showLabel={labelsRevealed}
+            queue={displayed}
             onSelectRow={setSelected}
           />
         )}
@@ -201,56 +235,60 @@ export default function Alerts({ batch, merchants }: Props) {
 }
 
 // ── Cost Calculator component ─────────────────────────────────────────────────
-function CostCalculator({ fp, fn }: { tp: number; fp: number; fn: number }) {
-  const [costFn, setCostFn] = useState(5000)  // cost of a missed fraud (false negative)
-  const [costFp, setCostFp] = useState(200)   // cost of a false alarm (false positive)
+function CostCalculator({ fp, fn }: { fp: number; fn: number }) {
+  const [costFn, setCostFn] = useState(10)
+  const [costFp, setCostFp] = useState(1)
   const totalCost = fn * costFn + fp * costFp
   const fmt = new Intl.NumberFormat('en')
+  const penalty = (value: string) => {
+    const number = Number(value)
+    return Number.isFinite(number) ? Math.min(1_000_000, Math.max(0, number)) : 0
+  }
 
   return (
     <section className="cost-calculator">
       <div className="cost-header">
-        <h2>Expected review cost</h2>
-        <p>Adjust the cost assumptions to see how the current threshold affects total operational cost. Updates live with the slider above.</p>
+        <h2>Illustrative error cost</h2>
+        <p>Choose penalty points for a missed fraud and a false alarm. This is a teaching scenario on this labeled batch, not a real bank cost estimate. It updates with the threshold above.</p>
       </div>
       <div className="cost-inputs">
         <label>
-          Cost of missed fraud (₹)
+          Penalty per missed fraud (points)
           <input
             type="number"
             min="0"
-            step="100"
+            step="1"
             value={costFn}
-            onChange={e => setCostFn(Math.max(0, Number(e.target.value)))}
+            onChange={e => setCostFn(penalty(e.target.value))}
           />
         </label>
         <label>
-          Cost of false alarm (₹)
+          Penalty per false alarm (points)
           <input
             type="number"
             min="0"
-            step="10"
+            step="1"
             value={costFp}
-            onChange={e => setCostFp(Math.max(0, Number(e.target.value)))}
+            onChange={e => setCostFp(penalty(e.target.value))}
           />
         </label>
       </div>
       <div className="cost-breakdown">
         <div>
           <span>Missed frauds × cost</span>
-          <strong>₹{fmt.format(fn * costFn)}</strong>
-          <small>{fn} missed × ₹{fmt.format(costFn)}</small>
+          <strong>{fmt.format(fn * costFn)} points</strong>
+          <small>{fn} missed × {fmt.format(costFn)} points</small>
         </div>
         <span className="cost-plus">+</span>
         <div>
           <span>False alarms × cost</span>
-          <strong>₹{fmt.format(fp * costFp)}</strong>
-          <small>{fp} false alarms × ₹{fmt.format(costFp)}</small>
+          <strong>{fmt.format(fp * costFp)} points</strong>
+          <small>{fp} false alarms × {fmt.format(costFp)} points</small>
         </div>
         <span className="cost-plus">=</span>
         <div className="cost-total">
-          <span>Total expected cost</span>
-          <strong>₹{fmt.format(totalCost)}</strong>
+          <span>Total scenario penalty</span>
+          <strong>{fmt.format(totalCost)} points</strong>
         </div>
       </div>
     </section>

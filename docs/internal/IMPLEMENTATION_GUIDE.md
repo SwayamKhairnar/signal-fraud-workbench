@@ -333,7 +333,7 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Files:** `ml/build_error_analysis.py`, `ml/artifacts/validation_analysis.json`, `backend/app/api.py`, `backend/tests/*`, `frontend/src/pages/ErrorAnalysis.tsx`, `frontend/src/lib/api.ts`.
 
-**Run/test:** Rebuild the artifact from `data/processed/validation.csv`; test aggregate counts against saved validation metrics; run backend tests and frontend build.
+**Run/test:** `.venv/bin/python -m ml.build_error_analysis`; test aggregate counts against saved validation metrics; run backend tests and frontend build.
 
 **Definition of done:** [ ] Segment counts sum correctly. [ ] Data source is visibly validation, not final test. [ ] Low-amount misses and uncertainty from small groups are clear. [ ] No new model choice uses final-test labels.
 

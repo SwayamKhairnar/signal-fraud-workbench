@@ -1,16 +1,17 @@
-import { useState } from 'react'
-import { scoreScenario, type Scenario, type Transaction } from '../lib/api'
+import { useRef, useState } from 'react'
+import { scoreScenario, type Explanation, type Scenario, type Transaction } from '../lib/api'
 import ReasonBars from './ReasonBars'
 
 const pct = (n: number) => `${(n * 100).toFixed(1)}%`
 
 type Props = {
   row: Transaction
+  original?: Explanation
   categories: string[]
   merchants: string[]
 }
 
-export default function WhatIf({ row, categories, merchants }: Props) {
+export default function WhatIf({ row, original, categories, merchants }: Props) {
   const [amount, setAmount] = useState(String(row.amount))
   const [step, setStep] = useState(String(row.step))
   const [category, setCategory] = useState(row.category)
@@ -18,20 +19,37 @@ export default function WhatIf({ row, categories, merchants }: Props) {
   const [result, setResult] = useState<Scenario | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const requestId = useRef(0)
+  const changes = result && original
+    ? result.factors.map(factor => {
+      const before = original.factors.find(item => item.factor === factor.factor)?.contribution ?? 0
+      return { factor: factor.factor, before, after: factor.contribution, delta: factor.contribution - before }
+    }).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+    : []
+
+  function invalidateScenario() {
+    requestId.current += 1
+    setResult(null)
+    setError('')
+    setBusy(false)
+  }
 
   async function run() {
+    const currentRequest = ++requestId.current
     setBusy(true)
     setError('')
+    setResult(null)
     try {
       const value = Number(amount)
       if (!Number.isFinite(value) || value < 0) throw new Error('Enter a nonnegative amount.')
       const day = Number(step)
       if (!Number.isInteger(day) || day < 0) throw new Error('Enter a nonnegative whole simulation day.')
-      setResult(await scoreScenario({ transaction_id: row.transaction_id, step: day, merchant, category, amount: value }))
+      const scenario = await scoreScenario({ transaction_id: row.transaction_id, step: day, merchant, category, amount: value })
+      if (requestId.current === currentRequest) setResult(scenario)
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Could not score this scenario.')
+      if (requestId.current === currentRequest) setError(cause instanceof Error ? cause.message : 'Could not score this scenario.')
     } finally {
-      setBusy(false)
+      if (requestId.current === currentRequest) setBusy(false)
     }
   }
 
@@ -48,7 +66,7 @@ export default function WhatIf({ row, categories, merchants }: Props) {
             min="0"
             step="0.01"
             value={amount}
-            onChange={e => setAmount(e.target.value)}
+            onChange={e => { invalidateScenario(); setAmount(e.target.value) }}
           />
         </label>
 
@@ -59,13 +77,13 @@ export default function WhatIf({ row, categories, merchants }: Props) {
             min="0"
             step="1"
             value={step}
-            onChange={e => setStep(e.target.value)}
+            onChange={e => { invalidateScenario(); setStep(e.target.value) }}
           />
         </label>
 
         <label>
           Category
-          <select value={category} onChange={e => setCategory(e.target.value)}>
+          <select value={category} onChange={e => { invalidateScenario(); setCategory(e.target.value) }}>
             {categories.map(v => (
               <option key={v} value={v}>{v.replace(/^es_/, '')}</option>
             ))}
@@ -74,8 +92,9 @@ export default function WhatIf({ row, categories, merchants }: Props) {
 
         <label>
           Merchant
-          <select value={merchant} onChange={e => setMerchant(e.target.value)}>
-            {merchants.slice(0, 80).map(v => (
+          <select value={merchant} onChange={e => { invalidateScenario(); setMerchant(e.target.value) }}>
+            {!merchants.includes(row.merchant) && <option value={row.merchant}>{row.merchant}</option>}
+            {merchants.map(v => (
               <option key={v} value={v}>{v}</option>
             ))}
           </select>
@@ -93,10 +112,19 @@ export default function WhatIf({ row, categories, merchants }: Props) {
           <div className="scenario-result">
             <span>Original <strong>{pct(row.risk_score)}</strong></span>
             <span>Hypothetical <strong>{pct(result.risk_score)}</strong></span>
-            <em>{result.would_alert ? 'Would alert at the saved threshold' : 'Would not alert at the saved threshold'}</em>
+            <em>{result.would_alert ? 'Would alert' : 'Would not alert'} at the saved threshold of {pct(result.threshold)}</em>
           </div>
           <h4 className="scenario-reasons-title">Hypothetical model factors</h4>
           <ReasonBars explanation={result} />
+          {changes.length > 0 && <div className="scenario-delta">
+            <h4>What changed the model score?</h4>
+            <p>Differences below are exact changes in raw model log-odds contribution. They describe model behavior, not a cause of fraud.</p>
+            {changes.map(item => <div key={item.factor}>
+              <strong>{item.factor}</strong>
+              <span>{item.before >= 0 ? '+' : ''}{item.before.toFixed(2)} → {item.after >= 0 ? '+' : ''}{item.after.toFixed(2)}</span>
+              <b className={item.delta >= 0 ? 'positive-text' : 'negative-text'}>{item.delta >= 0 ? '+' : ''}{item.delta.toFixed(2)}</b>
+            </div>)}
+          </div>}
         </>
       )}
     </section>

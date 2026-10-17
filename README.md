@@ -29,7 +29,7 @@ Start the frontend in a second terminal:
 cd frontend && npm run dev
 ```
 
-Open `http://localhost:5173`, choose **Explore sample batch**, then use Overview, Alerts, Model Lab, and Replay. Open an alert to inspect model contributions, record a browser-local review decision, and try a what-if edit. The Overview can download a PDF report. The sample uses 2,000 evenly spaced chronological positions across all 36 final-test days and contains 20 fraud labels. Its default threshold yields 16 alerts.
+Open `http://localhost:5173`, choose **Explore sample batch**, and follow the optional five-step demo guide through Overview, Alerts, Blind Spots, Model Lab, and Replay. In Alerts, known labels stay hidden until you reveal them after reviewing cases. Open an alert to inspect model contributions, record a browser-local decision, and compare a hypothetical scenario. The Overview can download a PDF report. The sample uses 2,000 evenly spaced chronological positions across all 36 final-test days and contains 20 fraud labels. Its default threshold yields 16 alerts.
 
 ## CSV contract
 
@@ -50,6 +50,7 @@ The BankSim source is licensed CC BY-NC-SA 4.0. The full downloaded CSV and deri
 
 Existing artifacts are guarded against accidental overwrite or repeat final-test evaluation. Reproduction should use a fresh copy of the project or explicitly archive the saved artifacts first.
 To refresh only the bundled demonstration slice without re-evaluating the final test, run `.venv/bin/python -m ml.build_demo_sample` after preparing `data/processed/test.csv`.
+The separate Blind Spots analysis is generated only from `data/processed/validation.csv` with `.venv/bin/python -m ml.build_error_analysis`; it never recomputes final-test metrics.
 
 ## Checks
 
@@ -69,7 +70,7 @@ docker run --rm -p 8000:8000 signal-fraud-workbench
 
 The root [render.yaml](render.yaml) defines one Docker web service on Render's free plan with `/api/health` as the health check. The public demo is linked above. Keep public uploads synthetic; this prototype has no accounts or multi-user case storage. Analyst review decisions stay in the browser under a versioned batch-and-model key and can be reset from Alerts.
 
-The same container was tested locally with a 512 MB memory and 0.1 CPU limit. It started in about 15.5 seconds and scored a 20,000-row HTTP upload in 2.64 seconds with about 159 MiB peak cgroup memory. Public-host upload and memory behavior is tracked in the [progress log](docs/internal/PROGRESS.md).
+The same container was tested locally with a 512 MB memory and 0.1 CPU limit. It started in about 15.5 seconds and scored a 20,000-row HTTP upload in 2.64 seconds with about 159 MiB peak cgroup memory. A 20,000-row synthetic upload to the public Render service returned HTTP 200 in 4.36 seconds. Host memory details and remaining checks are tracked in the [progress log](docs/internal/PROGRESS.md).
 
 ## Project documents
 

@@ -94,6 +94,22 @@ export type ModelLab = {
   importance_definition: string
 }
 
+export type ValidationSlice = {
+  name: string; rows: number; fraud: number; alerts: number
+  tp: number; fp: number; fn: number; tn: number
+  precision: number; recall: number | null
+  min_amount?: number; max_amount?: number
+}
+
+export type ValidationAnalysis = {
+  artifact_version: string; source: string; threshold: number
+  overall: Omit<ValidationSlice, 'name'>
+  by_amount: ValidationSlice[]; by_category: ValidationSlice[]; by_period: ValidationSlice[]
+  workload: (Omit<ValidationSlice, 'name'> & { threshold: number; alert_rate: number })[]
+  missed_examples: { step: number; category: string; amount: number; score: number }[]
+  notes: string
+}
+
 export class ApiError extends Error {
   code: string
   details: Record<string, unknown>
@@ -139,6 +155,10 @@ export async function explainTransaction(row: Transaction): Promise<Explanation>
 
 export async function getModelLab(): Promise<ModelLab> {
   return parseResponse<ModelLab>(await fetch('/api/model-lab'))
+}
+
+export async function getValidationAnalysis(): Promise<ValidationAnalysis> {
+  return parseResponse<ValidationAnalysis>(await fetch('/api/validation-analysis'))
 }
 
 export type Scenario = Explanation & { scenario: 'hypothetical'; threshold: number; would_alert: boolean }

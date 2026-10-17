@@ -6,11 +6,13 @@ type Props = {
   meta: Meta | null
   busy: boolean
   error: string | null
+  metaError: boolean
+  onRetry: () => void
   onDemo: () => void
   onFile: (file: File) => void
 }
 
-export default function Intake({ meta, busy, error, onDemo, onFile }: Props) {
+export default function Intake({ meta, busy, error, metaError, onRetry, onDemo, onFile }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
   const reducedMotion = useReducedMotion()
@@ -43,6 +45,7 @@ export default function Intake({ meta, busy, error, onDemo, onFile }: Props) {
         </div>
         <div className="intake-card-footer"><span>CSV · up to {Math.round((meta?.max_bytes ?? 5 * 1024 * 1024) / (1024 * 1024))} MB · {(meta?.max_rows ?? 20000).toLocaleString()} rows</span><a href="/api/template.csv" download>Download template ↗</a></div>
         {error && <div className="upload-error" role="alert"><strong>Couldn’t process that file</strong><span>{error}</span></div>}
+        {metaError && <div className="upload-error" role="alert"><strong>Model details are unavailable</strong><span>Sample scoring may still work. <button type="button" className="text-button" onClick={onRetry}>Retry connection</button></span></div>}
       </motion.div>
     </section>
     <section className="intake-notes">

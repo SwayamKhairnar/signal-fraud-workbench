@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+import math
 
 from backend.app.main import app
 
@@ -17,3 +18,7 @@ def test_what_if_matches_saved_model_and_keeps_original_independent() -> None:
     assert original_result["risk_score"] == client.post("/api/explain", json=original).json()["risk_score"]
     assert original["amount"] == 10 and original["category"] == "es_transportation"
     assert edited_result["would_alert"] == (edited_result["risk_score"] >= edited_result["threshold"])
+    first = {factor["factor"]: factor["contribution"] for factor in original_result["factors"]}
+    second = {factor["factor"]: factor["contribution"] for factor in edited_result["factors"]}
+    contribution_change = sum(second[name] - first[name] for name in first)
+    assert math.isclose(contribution_change, edited_result["raw_log_odds"] - original_result["raw_log_odds"], abs_tol=1e-8)

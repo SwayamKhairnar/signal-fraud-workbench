@@ -2,7 +2,7 @@
 
 ## Current stage
 
-Stage D: Phases 1-13 implemented. The [Render service](https://signal-fraud-workbench.onrender.com/) is live and its health endpoint loads the saved model. Phase 14 is preserving and deploying the newer local visual and explanation work. Phases 15-20 in the [implementation guide](IMPLEMENTATION_GUIDE.md) cover reliability, blind review, validation error analysis, workload decisions, guided demonstration, and final public acceptance.
+Stage D: Phases 1-14 complete. Commit `09a8ee1` is live on the [Render service](https://signal-fraud-workbench.onrender.com/); the public sample scores 2,000 rows with 16 alerts and the explanation endpoint responds. Phases 15-19 are implemented locally and are undergoing final acceptance before the Phase 20 public deployment. The [implementation guide](IMPLEMENTATION_GUIDE.md) records each phase.
 
 The project owner approved the final brief and BankSim, delegated technical choices, and asked the AI to evaluate each phase and continue without routine questions. The original brief's pause checkpoints are superseded by that request.
 
@@ -23,6 +23,12 @@ The project owner approved the final brief and BankSim, delegated technical choi
 | 11 | Responsive and keyboard/reduced-motion CSS | Production build passes; visual browser recheck blocked by browser policy |
 | 12 | Reliability and demo script | 13 backend tests pass; frontend build passes; 20k-row sample scored locally |
 | 13 | Single-service package | Docker image built; health, frontend, sample scoring, explanations, and 20k-row upload verified locally at 512 MB / 0.1 CPU; public source repository pushed |
+| 14 | Preserve newer visual baseline and deploy | Commit `09a8ee1` pushed; Render deploy succeeded; public sample and explanation API verified |
+| 15 | Correctness and resilience | Local frontend build: stale scenarios/errors reset, queue bounded to 100 rows per page, retry states added; browser acceptance pending |
+| 16 | Blind review | Local frontend build: source labels hidden until reveal, decision comparison separate from metrics; browser acceptance pending |
+| 17 | Validation error analysis | 128,820-row validation artifact generated; 14 backend tests pass; frontend build passes; browser acceptance pending |
+| 18 | Workload and illustrative cost | Validation workload chart and noncurrency penalty scenario implemented; build passes; browser acceptance pending |
+| 19 | Contribution comparison and demo guide | Local frontend build passes; browser acceptance pending |
 
 ## Model and data decisions
 
@@ -35,9 +41,9 @@ The project owner approved the final brief and BankSim, delegated technical choi
 
 ## Remaining checks
 
-1. Sync the Phase 14 revision to Render and verify the public sample, explanation, and Model Lab UI.
-2. Measure public-host 20,000-row scoring and recheck the UI at mobile and projector widths.
-3. Implement and verify Phases 15-20 in order.
+1. Finish Phase 15-19 browser acceptance, correct any issues, and commit the new artifact and UI work.
+2. Deploy the final commit and verify all new public flows. A 20,000-row synthetic upload already returned HTTP 200 from Render in 4.36 seconds with 210 alerts; final revision still needs the same acceptance check.
+3. Recheck the UI at mobile and projector widths, then close Phase 20.
 
 ## Known limitations
 
