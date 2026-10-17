@@ -6474,6 +6474,6 @@
     "file": "data/sample_labeled.csv",
     "rows": 2000,
     "fraud_rows": 20,
-    "origin": "first 2000 chronological test rows; no score or label selection"
+    "origin": "2000 evenly spaced chronological test positions across all test days; no score or label selection"
   }
 }

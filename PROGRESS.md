@@ -2,7 +2,7 @@
 
 ## Current stage
 
-Stage D: Phases 1-12 implemented and checked locally. Phase 13 is packaged for one Render Docker service and pushed to [GitHub](https://github.com/SwayamKhairnar/signal-fraud-workbench); the Render deployment and live URL are not yet verified.
+Stage D: Phases 1-12 implemented and checked locally. Phase 13's Docker service is built, locally verified under simulated free-tier limits, and pushed to [GitHub](https://github.com/SwayamKhairnar/signal-fraud-workbench); the Render deployment and live URL are not yet verified.
 
 The project owner approved the final brief and BankSim, delegated technical choices, and asked the AI to evaluate each phase and continue without routine questions. The original brief's pause checkpoints are superseded by that request.
 
@@ -14,7 +14,7 @@ The project owner approved the final brief and BankSim, delegated technical choi
 | 2 | BankSim source inspected and chronological split | 594,643 rows; split contract test |
 | 3 | Logistic and LightGBM trained, validation selection, untouched final test | Saved manifest, model card, artifact reload tests |
 | 4 | Bounded stateless upload, cleaning, scoring, EDA, model lab API | API contract tests and live local sample |
-| 5 | Intake and overview | Sample loaded: 2,000 scored, 14 alerts; overview browser inspection |
+| 5 | Intake and overview | Original one-day sample loaded in browser; refreshed cross-period sample now has 2,000 scored and 16 alerts by API check |
 | 6 | Alert queue, case detail, exact model contributions | Explanation reconstruction tests, including unknown values |
 | 7 | Fixed-test Model Lab and separate current-batch metrics/curves | Frontend build; artifact data keys checked |
 | 8 | Chronological replay with pause, restart, and 1x/5x/20x | Final replay totals checked against scoring result |
@@ -22,7 +22,7 @@ The project owner approved the final brief and BankSim, delegated technical choi
 | 10 | What-if rescoring and PDF export | What-if API test; sample PDF generated, rendered, and inspected |
 | 11 | Responsive and keyboard/reduced-motion CSS | Production build passes; visual browser recheck blocked by browser policy |
 | 12 | Reliability and demo script | 13 backend tests pass; frontend build passes; 20k-row sample scored locally |
-| 13 | Single-service package | Dockerfile, render.yaml, static serving, local static smoke test, and public source repository; Docker image build in progress |
+| 13 | Single-service package | Docker image built; health, frontend, sample scoring, explanations, and 20k-row upload verified locally at 512 MB / 0.1 CPU; public source repository pushed |
 
 ## Model and data decisions
 
@@ -30,17 +30,16 @@ The project owner approved the final brief and BankSim, delegated technical choi
 - Source: 594,643 rows, 7,200 fraud, 180 simulation days, 50 merchants, 15 categories.
 - Train steps 0-107: 332,592 rows/4,320 fraud. Validation 108-143: 128,820/1,440. Final test 144-179: 133,231/1,440.
 - Selected LightGBM at validation threshold 0.3228891536. Final full-test AP 0.91336, precision 0.90025, recall 0.76458, F1 0.82689. Test recall is lower than the logistic candidate and is disclosed in the model card.
-- The bundled 2,000-row chronological test sample has 20 fraud labels and yields 14 alerts. Sample batch precision 0.92857, recall 0.65, F1 0.76471.
+- The bundled 2,000-row deterministic sample spans all 36 final-test days, has 20 fraud labels, and yields 16 alerts. Sample batch precision 0.9375, recall 0.75, F1 0.8333. The sample changed to make the activity chart and replay meaningful; no full-test scores or metrics were recomputed.
 - Python 3.14.7, React 19, Vite 8, FastAPI, LightGBM. The full training dataset is excluded from the deployed package. Review decisions are browser-local and not used as labels.
 
 ## Remaining checks
 
-1. Finish the Docker build and run its sample path locally, including static assets and model loading.
-2. Finish Render sign-in, deploy the GitHub repository, and verify its public URL, 20,000-row memory, and cold start. Render sign-in is currently waiting for the project owner in the visible browser.
-3. Recheck the complete UI at mobile and projector widths when browser control permits it. The browser policy rejected the local page after the initial overview inspection; builds and API tests continue to pass.
+1. Finish Render sign-in, deploy the GitHub repository, and verify its public URL, 20,000-row memory, and cold start. Render sign-in is currently waiting for the project owner in the visible browser.
+2. Recheck the complete UI at mobile and projector widths when browser control permits it. The browser policy rejected the local page after the initial overview inspection; builds and API tests continue to pass.
 
 ## Known limitations
 
 - This is a synthetic decision-support demo with no live bank data or real-world calibration.
-- The 5 MB/20,000-row limit took 0.23 seconds for an in-process 20,000-row scoring request and 252,596 KB peak process memory on this machine. The deployed free host has a different CPU and memory profile.
+- The 5 MB/20,000-row limit took 0.23 seconds for an in-process request and 252,596 KB peak process memory on this machine. In Docker constrained to 512 MB and 0.1 CPU, startup took 15.54 seconds, a 20,000-row HTTP upload took 2.64 seconds, and peak cgroup memory was 166,694,912 bytes (about 159 MiB). The deployed free host still needs its own measurement.
 - Render free services sleep after inactivity, and uploaded rows disappear after refresh. Review decisions persist only in the same browser until reset.

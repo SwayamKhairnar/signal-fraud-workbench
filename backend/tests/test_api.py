@@ -26,6 +26,7 @@ def test_labeled_demo_scores_every_row_and_matches_counts() -> None:
     assert batch["cleaning"]["valid_rows"] == 2000
     assert len(batch["rows"]) == 2000
     assert sum(row["fraud"] for row in batch["rows"]) == 20
+    assert len({row["step"] for row in batch["rows"]}) == 36
     assert all(0 <= row["risk_score"] <= 1 for row in batch["rows"])
     assert batch["alert_count"] == sum(row["risk_score"] >= batch["default_threshold"] for row in batch["rows"])
     confusion = batch["evaluation"]["confusion"]

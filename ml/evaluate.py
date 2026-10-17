@@ -106,8 +106,9 @@ def evaluate(data_dir: Path, artifacts_dir: Path, sample_path: Path) -> dict:
             selected_importance = global_importance(name, model, matrix, feature_names)
 
     sample_path.parent.mkdir(parents=True, exist_ok=True)
-    sample_rows = rows.iloc[:2000]
-    sample_rows.to_csv(sample_path, index=False, columns=["transaction_id", "step", "merchant", "category", "amount", "fraud"])
+    sample_indices = np.linspace(0, len(rows) - 1, num=min(2000, len(rows)), dtype=int)
+    sample_rows = rows.iloc[sample_indices]
+    sample_rows.to_csv(sample_path, index=False, lineterminator="\n", columns=["transaction_id", "step", "merchant", "category", "amount", "fraud"])
     demo_frauds = int(sample_rows["fraud"].sum())
     if demo_frauds == 0:
         raise AssertionError("The chronological demo sample has no fraud rows")
@@ -122,7 +123,7 @@ def evaluate(data_dir: Path, artifacts_dir: Path, sample_path: Path) -> dict:
         "candidates": candidates,
         "selected_model_global_importance": selected_importance,
         "importance_definition": "Mean absolute raw-score contribution over the first 2,000 chronological test rows, grouped by source feature; not causal importance",
-        "demo_sample": {"file": str(sample_path), "rows": int(len(sample_rows)), "fraud_rows": demo_frauds, "origin": "first 2000 chronological test rows; no score or label selection"},
+        "demo_sample": {"file": str(sample_path), "rows": int(len(sample_rows)), "fraud_rows": demo_frauds, "origin": "2000 evenly spaced chronological test positions across all test days; no score or label selection"},
     }
     (artifacts_dir / "model_lab.json").write_text(json.dumps(model_lab, indent=2) + "\n", encoding="utf-8")
     manifest["test_evaluated"] = True

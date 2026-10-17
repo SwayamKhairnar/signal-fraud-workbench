@@ -8,13 +8,13 @@
 
 ## Click-by-click walkthrough
 
-1. **Explore sample batch.** Say: “This is a fixed chronological slice of synthetic BankSim transactions that the model never trained on. Training happened offline.” Wait for the overview.
-2. **Overview.** Point to 2,000 valid rows, 14 default-threshold alerts, and 20 supplied fraud labels. Say: “The labels are present only in the demonstration file. On an unlabeled upload, the app hides measured fraud performance.” Mention the 1.00% labeled fraud share and the transaction, category, amount, and score charts.
+1. **Explore sample batch.** Say: “This is a deterministic sample spread across all 36 held-out BankSim test days. The model never trained on these transactions; training happened offline.” Wait for the overview.
+2. **Overview.** Point to 2,000 valid rows, 16 default-threshold alerts, and 20 supplied fraud labels. Say: “The labels are present only in the demonstration file. On an unlabeled upload, the app hides measured fraud performance.” Mention the 1.00% labeled fraud share and the transaction, category, amount, and score charts.
 3. **Alerts.** Open the highest-ranked alert. Point to its score, transaction fields, and signed contribution bars. Say: “The saved LightGBM model produced these factors. They explain changes in the model’s raw score, not causes of actual fraud.” Mark it **Needs review** and explain that this browser-local analyst decision is separate from the source fraud label.
 4. **Threshold.** Move the threshold slightly up and down. Point to the changing alert count, precision, recall, F1, fraud caught, and false alarms. Say: “We are reclassifying the same saved scores, not retraining.” Reset to the saved threshold.
 5. **What if.** In the open case, change the amount or category and choose **Score scenario**. Compare the original and hypothetical scores and factors. Say: “This is one hypothetical rescore through the same saved model. The original row is unchanged.”
 6. **Model Lab.** Show the logistic baseline beside LightGBM. Explain that the fixed final test covers all 133,231 rows from simulation days 144-179, while the current batch section covers only these 2,000 rows. Point to average precision and the PR curve because fraud is rare; then explain TP, FP, FN, and TN using the confusion grid.
-7. **Replay.** Start at 5x or 20x, pause, and resume. Say: “This plays already-scored transactions in simulation order. It is not live streaming.” At completion, the counters should show 2,000 processed and 14 alerts.
+7. **Replay.** Start at 5x or 20x, pause, and resume. Say: “This plays already-scored transactions across 36 simulation days. It is not live streaming.” At completion, the counters should show 2,000 processed and 16 alerts.
 8. **Report.** Return to Overview and download the PDF. Open it and point to the dataset attribution, model version, threshold, and labeled batch metrics.
 
 ## Fallbacks and honest limitations
