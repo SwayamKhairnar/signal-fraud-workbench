@@ -377,6 +377,6 @@ After deployment, open the public URL and run the demo script from a fresh brows
 
 **Run/test:** `.venv/bin/python -m pytest backend/tests -q`, `cd frontend && npm run build`, followed by the public click-by-click demo.
 
-**Definition of done:** [ ] Public link serves the new revision. [ ] Core workflow and new features pass live checks. [ ] Repository is clean and docs match the app.
+**Definition of done:** [x] Public link serves the new revision. [x] Core workflow and new features pass live checks. [x] Tracked source is clean and docs match the app; three inconsistent pre-existing local validation CSVs remain untracked.
 
 **Demo-ability:** Final public AIML MVP.

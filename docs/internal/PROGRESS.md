@@ -2,7 +2,7 @@
 
 ## Current stage
 
-Stage D: Phases 1-19 are implemented and live on the [Render service](https://signal-fraud-workbench.onrender.com/). The public sample scores 2,000 rows with 16 alerts, and blind review, validation error analysis, workload controls, explanations, and replay have passed browser checks. Phase 20 final acceptance is in progress. The [implementation guide](IMPLEMENTATION_GUIDE.md) records each phase.
+Stage D: Phases 1-20 are complete. Commit `ee08f62` is live on the [Render service](https://signal-fraud-workbench.onrender.com/) (deploy `dep-db9tfmvavr4c73fbt340`). The public sample scores 2,000 rows with 16 alerts, and blind review, validation error analysis, workload controls, explanations, replay, and report download passed browser checks. The [implementation guide](IMPLEMENTATION_GUIDE.md) records each phase.
 
 The project owner approved the final brief and BankSim, delegated technical choices, and asked the AI to evaluate each phase and continue without routine questions. The original brief's pause checkpoints are superseded by that request.
 
@@ -29,6 +29,7 @@ The project owner approved the final brief and BankSim, delegated technical choi
 | 17 | Validation error analysis | 128,820-row validation artifact and public view verified; 14 backend tests pass |
 | 18 | Workload and illustrative cost | Public threshold extremes checked: 0% flags 2,000/2,000 and reports 20/20 fraud caught; penalty points and validation curve visible |
 | 19 | Contribution comparison and demo guide | Public five-step walkthrough, scenario factor changes, and 20x replay verified; frontend build passes |
+| 20 | Final public acceptance | Commit `ee08f62` deployed live; final bundle `index-QjvbEthN.js`, health/model and 128,820-row validation API checked; laptop and 375px mobile UI reviewed; generated public PDF has one A4 page with correct sample metrics |
 
 ## Model and data decisions
 
@@ -39,13 +40,14 @@ The project owner approved the final brief and BankSim, delegated technical choi
 - The bundled 2,000-row deterministic sample spans all 36 final-test days, has 20 fraud labels, and yields 16 alerts. Sample batch precision 0.9375, recall 0.75, F1 0.8333. The sample changed to make the activity chart and replay meaningful; no full-test scores or metrics were recomputed.
 - Python 3.14.7, React 19, Vite 8, FastAPI, LightGBM. The full training dataset is excluded from the deployed package. Review decisions are browser-local and not used as labels.
 
-## Remaining checks
+## Next evidence to collect
 
-1. Deploy the final polish commit and verify the new bundle publicly. A 20,000-row synthetic upload returned HTTP 200 from Render in 4.36 seconds with 210 alerts on the Phase 19 revision.
-2. Finish the mobile and laptop acceptance pass, including public report download, then close Phase 20.
+- A 20,000-row synthetic upload returned HTTP 200 from Render in 4.36 seconds with 210 alerts on the Phase 19 revision; repeat the load check if the service configuration changes.
+- A real-bank pilot would need a licensed, representative dataset, temporal and entity leakage review, calibrated operating thresholds, privacy controls, and analyst outcome tracking before any operational use.
 
 ## Known limitations
 
 - This is a synthetic decision-support demo with no live bank data or real-world calibration.
 - The 5 MB/20,000-row limit took 0.23 seconds for an in-process request and 252,596 KB peak process memory on this machine. In Docker constrained to 512 MB and 0.1 CPU, startup took about 25 seconds on the final image; a 20,000-row HTTP upload took 2.64 seconds on the earlier image, and peak cgroup memory was 166,694,912 bytes (about 159 MiB). The public Render request took 4.36 seconds. Free-host cold starts vary.
 - Render free services sleep after inactivity, and uploaded rows disappear after refresh. Review decisions persist only in the same browser until reset.
+- Three pre-existing local `data/sample_val_*.csv` files are excluded from commits because their repeated transaction IDs disagree with the prepared validation split. They were left untouched for the owner to reconcile.
