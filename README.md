@@ -1,4 +1,4 @@
-# Signal - Banking Fraud Analyst Workbench
+# Signal-Banking Fraud Analyst Workbench
 
 Signal is a college AIML demonstration of **batch fraud decision support** on the synthetic [BankSim dataset](https://www.kaggle.com/datasets/ealaxi/banksim1). It scores a documented CSV with a saved offline model, ranks alerts, explains each selected score, compares models, and replays transactions in simulation order. The app does not train on uploaded files or make real banking decisions.
 
